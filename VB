@@ -1,0 +1,512 @@
+ Private Sub RunScript(ByVal G As List(Of System.Object), ByVal R As List(Of Double), ByVal res As Double, ByVal iso As Double, ByVal smooth As Integer, ByVal taper As Integer, ByVal ratio As Double, ByVal run As Boolean, ByRef mc As Object) 
+
+    If run = True Then
+
+      'set edge and triangle tables from the inestimable PaulBourke.net
+      intEdgeTable = {&H0, &H109, &H203, &H30a, &H406, &H50f, &H605, &H70c,&H80c, &H905, &Ha0f, &Hb06, &Hc0a, &Hd03, &He09, &Hf00,&H190, &H99 , &H393, &H29a, &H596, &H49f, &H795, &H69c,&H99c, &H895, &Hb9f, &Ha96, &Hd9a, &Hc93, &Hf99, &He90,&H230, &H339, &H33 , &H13a, &H636, &H73f, &H435, &H53c,&Ha3c, &Hb35, &H83f, &H936, &He3a, &Hf33, &Hc39, &Hd30,&H3a0, &H2a9, &H1a3, &Haa , &H7a6, &H6af, &H5a5, &H4ac,&Hbac, &Haa5, &H9af, &H8a6, &Hfaa, &Hea3, &Hda9, &Hca0,&H460, &H569, &H663, &H76a, &H66 , &H16f, &H265, &H36c,&Hc6c, &Hd65, &He6f, &Hf66, &H86a, &H963, &Ha69, &Hb60,&H5f0, &H4f9, &H7f3, &H6fa, &H1f6, &Hff , &H3f5, &H2fc,&Hdfc, &Hcf5, &Hfff, &Hef6, &H9fa, &H8f3, &Hbf9, &Haf0,&H650, &H759, &H453, &H55a, &H256, &H35f, &H55 , &H15c,&He5c, &Hf55, &Hc5f, &Hd56, &Ha5a, &Hb53, &H859, &H950,&H7c0, &H6c9, &H5c3, &H4ca, &H3c6, &H2cf, &H1c5, &Hcc ,&Hfcc, &Hec5, &Hdcf, &Hcc6, &Hbca, &Hac3, &H9c9, &H8c0,&H8c0, &H9c9, &Hac3, &Hbca, &Hcc6, &Hdcf, &Hec5, &Hfcc,&Hcc , &H1c5, &H2cf, &H3c6, &H4ca, &H5c3, &H6c9, &H7c0,&H950, &H859, &Hb53, &Ha5a, &Hd56, &Hc5f, &Hf55, &He5c,&H15c, &H55 , &H35f, &H256, &H55a, &H453, &H759, &H650,&Haf0, &Hbf9, &H8f3, &H9fa, &Hef6, &Hfff, &Hcf5, &Hdfc,&H2fc, &H3f5, &Hff , &H1f6, &H6fa, &H7f3, &H4f9, &H5f0,&Hb60, &Ha69, &H963, &H86a, &Hf66, &He6f, &Hd65, &Hc6c,&H36c, &H265, &H16f, &H66 , &H76a, &H663, &H569, &H460,&Hca0, &Hda9, &Hea3, &Hfaa, &H8a6, &H9af, &Haa5, &Hbac,&H4ac, &H5a5, &H6af, &H7a6, &Haa , &H1a3, &H2a9, &H3a0,&Hd30, &Hc39, &Hf33, &He3a, &H936, &H83f, &Hb35, &Ha3c,&H53c, &H435, &H73f, &H636, &H13a, &H33 , &H339, &H230,&He90, &Hf99, &Hc93, &Hd9a, &Ha96, &Hb9f, &H895, &H99c,&H69c, &H795, &H49f, &H596, &H29a, &H393, &H99 , &H190,&Hf00, &He09, &Hd03, &Hc0a, &Hb06, &Ha0f, &H905, &H80c,&H70c, &H605, &H50f, &H406, &H30a, &H203, &H109, &H0}
+      intTriTable= {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 8, 3, 9, 8, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, 1, 2, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 2, 10, 0, 2, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{2, 8, 3, 2, 10, 8, 10, 9, 8, -1, -1, -1, -1, -1, -1, -1},{3, 11, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 11, 2, 8, 11, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 9, 0, 2, 3, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 11, 2, 1, 9, 11, 9, 8, 11, -1, -1, -1, -1, -1, -1, -1},{3, 10, 1, 11, 10, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 10, 1, 0, 8, 10, 8, 11, 10, -1, -1, -1, -1, -1, -1, -1},{3, 9, 0, 3, 11, 9, 11, 10, 9, -1, -1, -1, -1, -1, -1, -1},{9, 8, 10, 10, 8, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 7, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 3, 0, 7, 3, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 1, 9, 8, 4, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 1, 9, 4, 7, 1, 7, 3, 1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, 8, 4, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 4, 7, 3, 0, 4, 1, 2, 10, -1, -1, -1, -1, -1, -1, -1},{9, 2, 10, 9, 0, 2, 8, 4, 7, -1, -1, -1, -1, -1, -1, -1},{2, 10, 9, 2, 9, 7, 2, 7, 3, 7, 9, 4, -1, -1, -1, -1},{8, 4, 7, 3, 11, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{11, 4, 7, 11, 2, 4, 2, 0, 4, -1, -1, -1, -1, -1, -1, -1},{9, 0, 1, 8, 4, 7, 2, 3, 11, -1, -1, -1, -1, -1, -1, -1},{4, 7, 11, 9, 4, 11, 9, 11, 2, 9, 2, 1, -1, -1, -1, -1},{3, 10, 1, 3, 11, 10, 7, 8, 4, -1, -1, -1, -1, -1, -1, -1},{1, 11, 10, 1, 4, 11, 1, 0, 4, 7, 11, 4, -1, -1, -1, -1},{4, 7, 8, 9, 0, 11, 9, 11, 10, 11, 0, 3, -1, -1, -1, -1},{4, 7, 11, 4, 11, 9, 9, 11, 10, -1, -1, -1, -1, -1, -1, -1},{9, 5, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 5, 4, 0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 5, 4, 1, 5, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{8, 5, 4, 8, 3, 5, 3, 1, 5, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, 9, 5, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 0, 8, 1, 2, 10, 4, 9, 5, -1, -1, -1, -1, -1, -1, -1},{5, 2, 10, 5, 4, 2, 4, 0, 2, -1, -1, -1, -1, -1, -1, -1},{2, 10, 5, 3, 2, 5, 3, 5, 4, 3, 4, 8, -1, -1, -1, -1},{9, 5, 4, 2, 3, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 11, 2, 0, 8, 11, 4, 9, 5, -1, -1, -1, -1, -1, -1, -1},{0, 5, 4, 0, 1, 5, 2, 3, 11, -1, -1, -1, -1, -1, -1, -1},{2, 1, 5, 2, 5, 8, 2, 8, 11, 4, 8, 5, -1, -1, -1, -1},{10, 3, 11, 10, 1, 3, 9, 5, 4, -1, -1, -1, -1, -1, -1, -1},{4, 9, 5, 0, 8, 1, 8, 10, 1, 8, 11, 10, -1, -1, -1, -1},{5, 4, 0, 5, 0, 11, 5, 11, 10, 11, 0, 3, -1, -1, -1, -1},{5, 4, 8, 5, 8, 10, 10, 8, 11, -1, -1, -1, -1, -1, -1, -1},{9, 7, 8, 5, 7, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 3, 0, 9, 5, 3, 5, 7, 3, -1, -1, -1, -1, -1, -1, -1},{0, 7, 8, 0, 1, 7, 1, 5, 7, -1, -1, -1, -1, -1, -1, -1},{1, 5, 3, 3, 5, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 7, 8, 9, 5, 7, 10, 1, 2, -1, -1, -1, -1, -1, -1, -1},{10, 1, 2, 9, 5, 0, 5, 3, 0, 5, 7, 3, -1, -1, -1, -1},{8, 0, 2, 8, 2, 5, 8, 5, 7, 10, 5, 2, -1, -1, -1, -1},{2, 10, 5, 2, 5, 3, 3, 5, 7, -1, -1, -1, -1, -1, -1, -1},{7, 9, 5, 7, 8, 9, 3, 11, 2, -1, -1, -1, -1, -1, -1, -1},{9, 5, 7, 9, 7, 2, 9, 2, 0, 2, 7, 11, -1, -1, -1, -1},{2, 3, 11, 0, 1, 8, 1, 7, 8, 1, 5, 7, -1, -1, -1, -1},{11, 2, 1, 11, 1, 7, 7, 1, 5, -1, -1, -1, -1, -1, -1, -1},{9, 5, 8, 8, 5, 7, 10, 1, 3, 10, 3, 11, -1, -1, -1, -1},{5, 7, 0, 5, 0, 9, 7, 11, 0, 1, 0, 10, 11, 10, 0, -1},{11, 10, 0, 11, 0, 3, 10, 5, 0, 8, 0, 7, 5, 7, 0, -1},{11, 10, 5, 7, 11, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{10, 6, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, 5, 10, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 0, 1, 5, 10, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 8, 3, 1, 9, 8, 5, 10, 6, -1, -1, -1, -1, -1, -1, -1},{1, 6, 5, 2, 6, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 6, 5, 1, 2, 6, 3, 0, 8, -1, -1, -1, -1, -1, -1, -1},{9, 6, 5, 9, 0, 6, 0, 2, 6, -1, -1, -1, -1, -1, -1, -1},{5, 9, 8, 5, 8, 2, 5, 2, 6, 3, 2, 8, -1, -1, -1, -1},{2, 3, 11, 10, 6, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{11, 0, 8, 11, 2, 0, 10, 6, 5, -1, -1, -1, -1, -1, -1, -1},{0, 1, 9, 2, 3, 11, 5, 10, 6, -1, -1, -1, -1, -1, -1, -1},{5, 10, 6, 1, 9, 2, 9, 11, 2, 9, 8, 11, -1, -1, -1, -1},{6, 3, 11, 6, 5, 3, 5, 1, 3, -1, -1, -1, -1, -1, -1, -1},{0, 8, 11, 0, 11, 5, 0, 5, 1, 5, 11, 6, -1, -1, -1, -1},{3, 11, 6, 0, 3, 6, 0, 6, 5, 0, 5, 9, -1, -1, -1, -1},{6, 5, 9, 6, 9, 11, 11, 9, 8, -1, -1, -1, -1, -1, -1, -1},{5, 10, 6, 4, 7, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 3, 0, 4, 7, 3, 6, 5, 10, -1, -1, -1, -1, -1, -1, -1},{1, 9, 0, 5, 10, 6, 8, 4, 7, -1, -1, -1, -1, -1, -1, -1},{10, 6, 5, 1, 9, 7, 1, 7, 3, 7, 9, 4, -1, -1, -1, -1},{6, 1, 2, 6, 5, 1, 4, 7, 8, -1, -1, -1, -1, -1, -1, -1},{1, 2, 5, 5, 2, 6, 3, 0, 4, 3, 4, 7, -1, -1, -1, -1},{8, 4, 7, 9, 0, 5, 0, 6, 5, 0, 2, 6, -1, -1, -1, -1},{7, 3, 9, 7, 9, 4, 3, 2, 9, 5, 9, 6, 2, 6, 9, -1},{3, 11, 2, 7, 8, 4, 10, 6, 5, -1, -1, -1, -1, -1, -1, -1},{5, 10, 6, 4, 7, 2, 4, 2, 0, 2, 7, 11, -1, -1, -1, -1},{0, 1, 9, 4, 7, 8, 2, 3, 11, 5, 10, 6, -1, -1, -1, -1},{9, 2, 1, 9, 11, 2, 9, 4, 11, 7, 11, 4, 5, 10, 6, -1},{8, 4, 7, 3, 11, 5, 3, 5, 1, 5, 11, 6, -1, -1, -1, -1},{5, 1, 11, 5, 11, 6, 1, 0, 11, 7, 11, 4, 0, 4, 11, -1},{0, 5, 9, 0, 6, 5, 0, 3, 6, 11, 6, 3, 8, 4, 7, -1},{6, 5, 9, 6, 9, 11, 4, 7, 9, 7, 11, 9, -1, -1, -1, -1},{10, 4, 9, 6, 4, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 10, 6, 4, 9, 10, 0, 8, 3, -1, -1, -1, -1, -1, -1, -1},{10, 0, 1, 10, 6, 0, 6, 4, 0, -1, -1, -1, -1, -1, -1, -1},{8, 3, 1, 8, 1, 6, 8, 6, 4, 6, 1, 10, -1, -1, -1, -1},{1, 4, 9, 1, 2, 4, 2, 6, 4, -1, -1, -1, -1, -1, -1, -1},{3, 0, 8, 1, 2, 9, 2, 4, 9, 2, 6, 4, -1, -1, -1, -1},{0, 2, 4, 4, 2, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{8, 3, 2, 8, 2, 4, 4, 2, 6, -1, -1, -1, -1, -1, -1, -1},{10, 4, 9, 10, 6, 4, 11, 2, 3, -1, -1, -1, -1, -1, -1, -1},{0, 8, 2, 2, 8, 11, 4, 9, 10, 4, 10, 6, -1, -1, -1, -1},{3, 11, 2, 0, 1, 6, 0, 6, 4, 6, 1, 10, -1, -1, -1, -1},{6, 4, 1, 6, 1, 10, 4, 8, 1, 2, 1, 11, 8, 11, 1, -1},{9, 6, 4, 9, 3, 6, 9, 1, 3, 11, 6, 3, -1, -1, -1, -1},{8, 11, 1, 8, 1, 0, 11, 6, 1, 9, 1, 4, 6, 4, 1, -1},{3, 11, 6, 3, 6, 0, 0, 6, 4, -1, -1, -1, -1, -1, -1, -1},{6, 4, 8, 11, 6, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{7, 10, 6, 7, 8, 10, 8, 9, 10, -1, -1, -1, -1, -1, -1, -1},{0, 7, 3, 0, 10, 7, 0, 9, 10, 6, 7, 10, -1, -1, -1, -1},{10, 6, 7, 1, 10, 7, 1, 7, 8, 1, 8, 0, -1, -1, -1, -1},{10, 6, 7, 10, 7, 1, 1, 7, 3, -1, -1, -1, -1, -1, -1, -1},{1, 2, 6, 1, 6, 8, 1, 8, 9, 8, 6, 7, -1, -1, -1, -1},{2, 6, 9, 2, 9, 1, 6, 7, 9, 0, 9, 3, 7, 3, 9, -1},{7, 8, 0, 7, 0, 6, 6, 0, 2, -1, -1, -1, -1, -1, -1, -1},{7, 3, 2, 6, 7, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{2, 3, 11, 10, 6, 8, 10, 8, 9, 8, 6, 7, -1, -1, -1, -1},{2, 0, 7, 2, 7, 11, 0, 9, 7, 6, 7, 10, 9, 10, 7, -1},{1, 8, 0, 1, 7, 8, 1, 10, 7, 6, 7, 10, 2, 3, 11, -1},{11, 2, 1, 11, 1, 7, 10, 6, 1, 6, 7, 1, -1, -1, -1, -1},{8, 9, 6, 8, 6, 7, 9, 1, 6, 11, 6, 3, 1, 3, 6, -1},{0, 9, 1, 11, 6, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{7, 8, 0, 7, 0, 6, 3, 11, 0, 11, 6, 0, -1, -1, -1, -1},{7, 11, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{7, 6, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 0, 8, 11, 7, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 1, 9, 11, 7, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{8, 1, 9, 8, 3, 1, 11, 7, 6, -1, -1, -1, -1, -1, -1, -1},{10, 1, 2, 6, 11, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, 3, 0, 8, 6, 11, 7, -1, -1, -1, -1, -1, -1, -1},{2, 9, 0, 2, 10, 9, 6, 11, 7, -1, -1, -1, -1, -1, -1, -1},{6, 11, 7, 2, 10, 3, 10, 8, 3, 10, 9, 8, -1, -1, -1, -1},{7, 2, 3, 6, 2, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{7, 0, 8, 7, 6, 0, 6, 2, 0, -1, -1, -1, -1, -1, -1, -1},{2, 7, 6, 2, 3, 7, 0, 1, 9, -1, -1, -1, -1, -1, -1, -1},{1, 6, 2, 1, 8, 6, 1, 9, 8, 8, 7, 6, -1, -1, -1, -1},{10, 7, 6, 10, 1, 7, 1, 3, 7, -1, -1, -1, -1, -1, -1, -1},{10, 7, 6, 1, 7, 10, 1, 8, 7, 1, 0, 8, -1, -1, -1, -1},{0, 3, 7, 0, 7, 10, 0, 10, 9, 6, 10, 7, -1, -1, -1, -1},{7, 6, 10, 7, 10, 8, 8, 10, 9, -1, -1, -1, -1, -1, -1, -1},{6, 8, 4, 11, 8, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 6, 11, 3, 0, 6, 0, 4, 6, -1, -1, -1, -1, -1, -1, -1},{8, 6, 11, 8, 4, 6, 9, 0, 1, -1, -1, -1, -1, -1, -1, -1},{9, 4, 6, 9, 6, 3, 9, 3, 1, 11, 3, 6, -1, -1, -1, -1},{6, 8, 4, 6, 11, 8, 2, 10, 1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, 3, 0, 11, 0, 6, 11, 0, 4, 6, -1, -1, -1, -1},{4, 11, 8, 4, 6, 11, 0, 2, 9, 2, 10, 9, -1, -1, -1, -1},{10, 9, 3, 10, 3, 2, 9, 4, 3, 11, 3, 6, 4, 6, 3, -1},{8, 2, 3, 8, 4, 2, 4, 6, 2, -1, -1, -1, -1, -1, -1, -1},{0, 4, 2, 4, 6, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 9, 0, 2, 3, 4, 2, 4, 6, 4, 3, 8, -1, -1, -1, -1},{1, 9, 4, 1, 4, 2, 2, 4, 6, -1, -1, -1, -1, -1, -1, -1},{8, 1, 3, 8, 6, 1, 8, 4, 6, 6, 10, 1, -1, -1, -1, -1},{10, 1, 0, 10, 0, 6, 6, 0, 4, -1, -1, -1, -1, -1, -1, -1},{4, 6, 3, 4, 3, 8, 6, 10, 3, 0, 3, 9, 10, 9, 3, -1},{10, 9, 4, 6, 10, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 9, 5, 7, 6, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, 4, 9, 5, 11, 7, 6, -1, -1, -1, -1, -1, -1, -1},{5, 0, 1, 5, 4, 0, 7, 6, 11, -1, -1, -1, -1, -1, -1, -1},{11, 7, 6, 8, 3, 4, 3, 5, 4, 3, 1, 5, -1, -1, -1, -1},{9, 5, 4, 10, 1, 2, 7, 6, 11, -1, -1, -1, -1, -1, -1, -1},{6, 11, 7, 1, 2, 10, 0, 8, 3, 4, 9, 5, -1, -1, -1, -1},{7, 6, 11, 5, 4, 10, 4, 2, 10, 4, 0, 2, -1, -1, -1, -1},{3, 4, 8, 3, 5, 4, 3, 2, 5, 10, 5, 2, 11, 7, 6, -1},{7, 2, 3, 7, 6, 2, 5, 4, 9, -1, -1, -1, -1, -1, -1, -1},{9, 5, 4, 0, 8, 6, 0, 6, 2, 6, 8, 7, -1, -1, -1, -1},{3, 6, 2, 3, 7, 6, 1, 5, 0, 5, 4, 0, -1, -1, -1, -1},{6, 2, 8, 6, 8, 7, 2, 1, 8, 4, 8, 5, 1, 5, 8, -1},{9, 5, 4, 10, 1, 6, 1, 7, 6, 1, 3, 7, -1, -1, -1, -1},{1, 6, 10, 1, 7, 6, 1, 0, 7, 8, 7, 0, 9, 5, 4, -1},{4, 0, 10, 4, 10, 5, 0, 3, 10, 6, 10, 7, 3, 7, 10, -1},{7, 6, 10, 7, 10, 8, 5, 4, 10, 4, 8, 10, -1, -1, -1, -1},{6, 9, 5, 6, 11, 9, 11, 8, 9, -1, -1, -1, -1, -1, -1, -1},{3, 6, 11, 0, 6, 3, 0, 5, 6, 0, 9, 5, -1, -1, -1, -1},{0, 11, 8, 0, 5, 11, 0, 1, 5, 5, 6, 11, -1, -1, -1, -1},{6, 11, 3, 6, 3, 5, 5, 3, 1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 10, 9, 5, 11, 9, 11, 8, 11, 5, 6, -1, -1, -1, -1},{0, 11, 3, 0, 6, 11, 0, 9, 6, 5, 6, 9, 1, 2, 10, -1},{11, 8, 5, 11, 5, 6, 8, 0, 5, 10, 5, 2, 0, 2, 5, -1},{6, 11, 3, 6, 3, 5, 2, 10, 3, 10, 5, 3, -1, -1, -1, -1},{5, 8, 9, 5, 2, 8, 5, 6, 2, 3, 8, 2, -1, -1, -1, -1},{9, 5, 6, 9, 6, 0, 0, 6, 2, -1, -1, -1, -1, -1, -1, -1},{1, 5, 8, 1, 8, 0, 5, 6, 8, 3, 8, 2, 6, 2, 8, -1},{1, 5, 6, 2, 1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 3, 6, 1, 6, 10, 3, 8, 6, 5, 6, 9, 8, 9, 6, -1},{10, 1, 0, 10, 0, 6, 9, 5, 0, 5, 6, 0, -1, -1, -1, -1},{0, 3, 8, 5, 6, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{10, 5, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{11, 5, 10, 7, 5, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{11, 5, 10, 11, 7, 5, 8, 3, 0, -1, -1, -1, -1, -1, -1, -1},{5, 11, 7, 5, 10, 11, 1, 9, 0, -1, -1, -1, -1, -1, -1, -1},{10, 7, 5, 10, 11, 7, 9, 8, 1, 8, 3, 1, -1, -1, -1, -1},{11, 1, 2, 11, 7, 1, 7, 5, 1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, 1, 2, 7, 1, 7, 5, 7, 2, 11, -1, -1, -1, -1},{9, 7, 5, 9, 2, 7, 9, 0, 2, 2, 11, 7, -1, -1, -1, -1},{7, 5, 2, 7, 2, 11, 5, 9, 2, 3, 2, 8, 9, 8, 2, -1},{2, 5, 10, 2, 3, 5, 3, 7, 5, -1, -1, -1, -1, -1, -1, -1},{8, 2, 0, 8, 5, 2, 8, 7, 5, 10, 2, 5, -1, -1, -1, -1},{9, 0, 1, 5, 10, 3, 5, 3, 7, 3, 10, 2, -1, -1, -1, -1},{9, 8, 2, 9, 2, 1, 8, 7, 2, 10, 2, 5, 7, 5, 2, -1},{1, 3, 5, 3, 7, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 8, 7, 0, 7, 1, 1, 7, 5, -1, -1, -1, -1, -1, -1, -1},{9, 0, 3, 9, 3, 5, 5, 3, 7, -1, -1, -1, -1, -1, -1, -1},{9, 8, 7, 5, 9, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{5, 8, 4, 5, 10, 8, 10, 11, 8, -1, -1, -1, -1, -1, -1, -1},{5, 0, 4, 5, 11, 0, 5, 10, 11, 11, 3, 0, -1, -1, -1, -1},{0, 1, 9, 8, 4, 10, 8, 10, 11, 10, 4, 5, -1, -1, -1, -1},{10, 11, 4, 10, 4, 5, 11, 3, 4, 9, 4, 1, 3, 1, 4, -1},{2, 5, 1, 2, 8, 5, 2, 11, 8, 4, 5, 8, -1, -1, -1, -1},{0, 4, 11, 0, 11, 3, 4, 5, 11, 2, 11, 1, 5, 1, 11, -1},{0, 2, 5, 0, 5, 9, 2, 11, 5, 4, 5, 8, 11, 8, 5, -1},{9, 4, 5, 2, 11, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{2, 5, 10, 3, 5, 2, 3, 4, 5, 3, 8, 4, -1, -1, -1, -1},{5, 10, 2, 5, 2, 4, 4, 2, 0, -1, -1, -1, -1, -1, -1, -1},{3, 10, 2, 3, 5, 10, 3, 8, 5, 4, 5, 8, 0, 1, 9, -1},{5, 10, 2, 5, 2, 4, 1, 9, 2, 9, 4, 2, -1, -1, -1, -1},{8, 4, 5, 8, 5, 3, 3, 5, 1, -1, -1, -1, -1, -1, -1, -1},{0, 4, 5, 1, 0, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{8, 4, 5, 8, 5, 3, 9, 0, 5, 0, 3, 5, -1, -1, -1, -1},{9, 4, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 11, 7, 4, 9, 11, 9, 10, 11, -1, -1, -1, -1, -1, -1, -1},{0, 8, 3, 4, 9, 7, 9, 11, 7, 9, 10, 11, -1, -1, -1, -1},{1, 10, 11, 1, 11, 4, 1, 4, 0, 7, 4, 11, -1, -1, -1, -1},{3, 1, 4, 3, 4, 8, 1, 10, 4, 7, 4, 11, 10, 11, 4, -1},{4, 11, 7, 9, 11, 4, 9, 2, 11, 9, 1, 2, -1, -1, -1, -1},{9, 7, 4, 9, 11, 7, 9, 1, 11, 2, 11, 1, 0, 8, 3, -1},{11, 7, 4, 11, 4, 2, 2, 4, 0, -1, -1, -1, -1, -1, -1, -1},{11, 7, 4, 11, 4, 2, 8, 3, 4, 3, 2, 4, -1, -1, -1, -1},{2, 9, 10, 2, 7, 9, 2, 3, 7, 7, 4, 9, -1, -1, -1, -1},{9, 10, 7, 9, 7, 4, 10, 2, 7, 8, 7, 0, 2, 0, 7, -1},{3, 7, 10, 3, 10, 2, 7, 4, 10, 1, 10, 0, 4, 0, 10, -1},{1, 10, 2, 8, 7, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 9, 1, 4, 1, 7, 7, 1, 3, -1, -1, -1, -1, -1, -1, -1},{4, 9, 1, 4, 1, 7, 0, 8, 1, 8, 7, 1, -1, -1, -1, -1},{4, 0, 3, 7, 4, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{4, 8, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{9, 10, 8, 10, 11, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 0, 9, 3, 9, 11, 11, 9, 10, -1, -1, -1, -1, -1, -1, -1},{0, 1, 10, 0, 10, 8, 8, 10, 11, -1, -1, -1, -1, -1, -1, -1},{3, 1, 10, 11, 3, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 2, 11, 1, 11, 9, 9, 11, 8, -1, -1, -1, -1, -1, -1, -1},{3, 0, 9, 3, 9, 11, 1, 2, 9, 2, 11, 9, -1, -1, -1, -1},{0, 2, 11, 8, 0, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{3, 2, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{2, 3, 8, 2, 8, 10, 10, 8, 9, -1, -1, -1, -1, -1, -1, -1},{9, 10, 2, 0, 9, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{2, 3, 8, 2, 8, 10, 0, 1, 8, 1, 10, 8, -1, -1, -1, -1},{1, 10, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{1, 3, 8, 9, 1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}}
+
+      use_iso = iso
+      TaperCurves = taper
+      TaperRatio = ratio
+      If ratio < 0 Then
+        TaperRatio = 0
+      ElseIf ratio > 1 Then
+        TaperRatio = 1
+      End If
+
+      'setup point and curve geometry sources
+      Dim crvSource As New List(Of Curve)
+      Dim crvRad As New List(Of Double)
+
+      Dim ptSource As New List(Of Point3d)
+      Dim ptRad As New List(Of Double)
+
+      Dim brpSource As New List(Of Brep)
+      Dim brpMesh As New List(Of Mesh)
+      Dim brpRad As New List(Of Double)
+
+      Dim radCounter As Int32 = -1
+
+      For Gi As Int32 = 0 To G.Count - 1
+
+        If GI <= R.Count - 1 Then
+          radCounter += 1
+        End If
+
+        Dim crv As Curve = TryCast(G(Gi), Curve)
+        If crv IsNot Nothing Then
+          crv.Domain = New Interval(0, 1)
+          crvSource.Add(Crv)
+          crvRad.Add(R(radCounter))
+        Else
+          If TypeOf(G(Gi)) Is Line Then
+            Dim lin As Line = DirectCast(G(Gi), Line)
+            Dim lc As New LineCurve(lin)
+            lc.Domain = New Interval(0, 1)
+            crvSource.Add(lc)
+            crvRad.Add(R(radCounter))
+          Else
+            Dim brp As Brep = TryCast(G(Gi), Brep)
+            If brp IsNot Nothing Then
+              brpSource.Add(brp)
+              brpRad.Add(R(radCounter))
+              Dim msh() As Mesh = Mesh.CreateFromBrep(brp)
+              Dim mshSet As New Mesh
+              For Each mshAdd As Mesh In msh
+                mshSet.Append(mshAdd)
+              Next
+              refine_mesh(mshSet)
+              brpMesh.Add(mshSet)
+            Else
+              ptSource.Add(G(Gi))
+              ptRad.Add(R(radCounter))
+            End If
+          End If
+        End If
+
+      Next
+
+      'charge sphere lookup data for both the rTree and the bounding box for the sample point 3D grid
+      Dim pt As New List(Of Point3d)
+      Dim rad As New List(Of Double)
+      Dim tgtType As New List(Of Int32)
+      Dim tgtIdx As New List(Of int32)
+
+      For crvi As Int32 = 0 To crvSource.Count - 1 'assign series of spheres along curve for identifying sample points for inclusion
+        Dim crv As Curve = crvSource(crvi)
+        Dim t() As Double = crv.DivideByCount(crv.GetLength / crvRad(crvi), True)
+        Dim SphereRad As Double = Math.Sqrt(crvRad(crvi) ^ 2 + (crvRad(crvi) / 2) ^ 2) * 1.3
+        For Each tSet As Double In t
+          Dim ptAdd As Point3d = crv.PointAt(tSet)
+          Dim blAdd As Boolean = True
+
+          If blAdd = True Then
+
+            pt.Add(ptAdd)
+            rad.Add(SphereRad)
+            tgtType.Add(0)
+            tgtIdx.Add(crvi)
+
+          End If
+        Next
+      Next
+
+      For pti As Int32 = 0 To ptSource.Count - 1
+        pt.Add(ptSource(pti))
+        rad.Add(ptRad(pti) * 1.3)
+        tgtType.Add(1)
+        tgtIdx.Add(pti)
+      Next
+
+      For brpi As Int32 = 0 To brpSource.Count - 1
+
+        Dim brpCrvs() As Curve = brpSource(brpi).DuplicateEdgeCurves
+
+        For crvi As Int32 = 0 To brpCrvs.Length - 1 'assign series of spheres along curve for identifying sample points for inclusion
+          Dim crv As Curve = brpCrvs(crvi)
+          Dim t() As Double = crv.DivideByCount(crv.GetLength / brpRad(brpi), True)
+          Dim SphereRad As Double = Math.Sqrt(brpRad(brpi) ^ 2 + (brpRad(brpi) / 2) ^ 2) * 1.3
+          For Each tSet As Double In t
+            pt.Add(crv.PointAt(tSet))
+            rad.Add(SphereRad)
+            tgtType.Add(2)
+            tgtIdx.Add(brpi)
+          Next
+        Next
+
+        For fi As int32 = 0 To brpSource(brpi).Faces.Count - 1
+
+          Dim bface As BrepFace = brpSource(brpi).Faces(fi)
+          Dim SphereRad As Double = Math.Sqrt(brpRad(brpi) ^ 2 + (brpRad(brpi) / 2) ^ 2) * 1.3
+
+          Dim w,h As Double
+          bface.GetSurfaceSize(w, h)
+          Dim ui As Double = w / brpRad(brpi)
+          Dim vi As Double = h / brpRad(brpi)
+
+          For u As Int32 = 0 To ui
+            For v As Int32 = 0 To vi
+              If bface.IsPointOnFace(bface.Domain(0).ParameterAt(u / ui), bface.Domain(1).ParameterAt(v / vi)) Then
+                pt.Add(bface.PointAt(bface.Domain(0).ParameterAt(u / ui), bface.Domain(1).ParameterAt(v / vi)))
+                rad.Add(SphereRad)
+                tgtType.Add(2)
+                tgtIdx.Add(brpi)
+              End If
+            Next
+          Next
+
+        Next
+
+      Next
+
+
+      'generate box orienting plane
+      Dim pl As Plane = Nothing
+      Plane.FitPlaneToPoints(pt, pl)
+      pl.Origin = pt(0)
+      '
+      'generate bounding box
+      Dim dom As New interval(-rad(0), rad(0))
+      Dim b As New Box(pl, dom, dom, dom)
+      '
+      For set_s As Int32 = 1 To pt.Count - 1
+        pl.Origin = pt(set_s)
+        b.Union(pl.PointAt(-rad(set_s), -rad(set_s), -rad(set_s)))
+        b.Union(pl.PointAt(rad(set_s), rad(set_s), rad(set_s)))
+      Next
+
+      b.Inflate(res * 3)
+      Dim rt As New RTree 'the RTree used for assigning sample points to appropriate point/curve charges
+
+      'calculate sample point grid size relative to the xyz of the oriented bounding box
+      Dim xSet As Int32 = b.X.Length / res
+      Dim ySet As Int32 = b.Y.Length / res
+      Dim zSet As Int32 = b.Z.Length / res
+      Dim xLength As Double = b.X.Length / xSet
+      Dim yLength As Double = b.Y.Length / ySet
+      Dim zLength As Double = b.Z.Length / zSet
+      Dim xOffset As Double = xLength / 2
+      Dim yOffset As Double = yLength / 2
+      Dim zOffset As Double = zLength / 2
+
+      pl.Origin = b.GetCorners(0)
+
+      Dim bCornerLookup(xSet*ySet*zSet-1, 7) As Int32 'array of corner indices for each cell
+      Dim bCenterIdx As Int32 = 0
+
+      Dim bCorners As New List(Of Point3d) 'list of all cell corners
+      Dim bCornerField((xSet+1)*(ySet+1)*(zSet+1)-1) As Double
+      Dim bCornerIdx As Int32 = 0
+
+      'Setup rTree with center points of each cell, all cell corner points and indices of corners for each cell for looking up iso calc
+
+      For xRun As Int32 = 0 To xSet
+        For yRun As Int32 = 0 To ySet
+          For zRun As Int32 = 0 To zSet
+            If xRun < xSet And yRun < ySet And zRun < zSet Then
+
+              'setting up cell centers and assigning index array for all associated sample points
+
+              Dim bCenter As Point3d = pl.PointAt(xOffset + (xLength * xRun), yOffset + (yLength * yRun), zOffset + (zLength * zRun))
+              rt.Insert(bCenter, bCenterIdx)
+
+              Dim lc As Int32 = bCornerIdx
+              Dim rc As Int32 = lc + ((ySet + 1) * (zSet + 1))
+
+              bCornerLookup(bCenterIdx, 0) = lc + zSet + 1
+              bCornerLookup(bCenterIdx, 1) = rc + zSet + 1
+              bCornerLookup(bCenterIdx, 2) = rc
+              bCornerLookup(bCenterIdx, 3) = lc
+              bCornerLookup(bCenterIdx, 4) = lc + zSet + 2
+              bCornerLookup(bCenterIdx, 5) = rc + zSet + 2
+              bCornerLookup(bCenterIdx, 6) = rc + 1
+              bCornerLookup(bCenterIdx, 7) = lc + 1
+
+              bCenterIdx += 1
+
+            End If
+
+            'sample points
+            Dim bCorner As Point3d = pl.PointAt(xLength * xRun, yLength * yRun, zLength * zRun)
+            bCorners.Add(bCorner)
+
+            bCornerIdx += 1
+          Next
+        Next
+      Next
+
+      Dim MchCube As New Mesh
+
+      'create a list of corner field values to calculate
+      Dim CalcIndices As New DataTree(Of Int32) 'a data tree of sample points to be calculated, assigned according to charge
+      'type and index, and cleaned of all duplicate values
+      Dim CalcIndicesStart As New List(Of Int32) 'an initial list of sample points to be calculated, with potential duplicates
+
+      Dim CenterTargetRaw As New List(Of Int32)
+      Dim CenterTargetRefined As New List(Of Int32)
+
+      For rti As int32 = 0 To pt.Count - 1 'cycle through all charge points
+
+        'for each curve, there are multiple charge point spheres that need to be assessed
+
+        If rti > 0 Then 'after the first charge is assessed, it is determined at each cycle if the charge is part of the same
+          'input curve geometry...if it is part of a new one, then append the cleaned sample point indices, otherwise, continue
+          'evaluating sample points
+          If tgtType(rti) <> tgtType(rti - 1) Or tgtIdx(rti) <> tgtIdx(rti - 1) Then
+            CalcIndices.AddRange(CalcIndicesStart.Distinct.ToList, New GH_Path(tgtType(rti - 1), tgtIdx(rti - 1)))
+            CalcIndicesStart.Clear
+          End If
+        End If
+
+        'use the rTree to test proximity of cell centers to charge points...for all cell centers within the assigned radius of
+        'each charge point
+        Dim DataSet As New search_data(pt(rti))
+        If rt.Search(New Sphere(pt(rti), rad(rti)), AddressOf search_call, DataSet) = True Then
+          If DataSet.target_idc.Count > 0 Then
+            For Each target_idx As Int32 In DataSet.target_idc
+              For i As int32 = 0 To 7
+                CalcIndicesStart.Add(bCornerLookup(target_idx, i))
+                CenterTargetRaw.Add(target_idx)
+              Next
+            Next
+          End If
+        End If
+
+        'at the last cycle, append the last list
+        If rti = pt.Count - 1 Then
+          CalcIndices.AddRange(CalcIndicesStart.Distinct.ToList, New GH_Path(tgtType(rti), tgtIdx(rti)))
+        End If
+
+      Next
+
+      'list of all unique cells that will need to be assessed
+      CenterTargetRefined.AddRange(CenterTargetRaw.Distinct.ToList)
+
+      'field calculations for all relevant charge/sample point relationships
+      For Each p As GH_Path In CalcIndices.Paths
+
+        Dim CI As List(Of Int32) = CalcIndices.Branch(p)
+
+        If p.Indices(0) = 0 Then 'it's a curve
+
+          Dim crv As Curve = crvSource(p.Indices(1))
+          Dim radius As Double = crvRad(p.Indices(1))
+
+          For Each CalcIndex As Int32 In CI
+            bCornerField(CalcIndex) += calculate_crv_field(bCorners(CalcIndex), crv, radius)
+          Next
+
+        ElseIf p.Indices(0) = 1 Then 'it's a point
+
+          Dim center As Point3d = ptSource(p.Indices(1))
+          Dim radius As Double = ptRad(p.Indices(1))
+
+          For Each CalcIndex As Int32 In CI
+            bCornerField(CalcIndex) += calculate_pt_field(bCorners(CalcIndex), center, radius)
+          Next
+
+        Else 'it's a brep
+
+          Dim brp As Brep = brpSource(p.Indices(1))
+          Dim msh As Mesh = brpMesh(p.Indices(1))
+          Dim radius As Double = brpRad(p.Indices(1))
+
+          For Each CalcIndex As Int32 In CI
+            bCornerField(CalcIndex) += calculate_brp_field(bCorners(CalcIndex), msh, radius)
+          Next
+
+        End If
+
+      Next
+
+      For Each CenterTarget As Int32 In CenterTargetRefined
+
+        Dim CList As New List(Of Point3d)
+        Dim CField As New List(Of Double)
+
+        For i As Int32 = 0 To 7
+
+          CList.Add(bCorners(bCornerLookup(CenterTarget, i)))
+          CField.Add(bCornerField(bCornerLookup(CenterTarget, i)))
+
+        Next
+
+        Dim TriMesh As Mesh = local_cube(CList, CField)
+        MchCube.append(TriMesh)
+
+      Next
+
+      refine_mesh(MchCube)
+
+      Dim DisjointMesh() As Mesh = mchCube.SplitDisjointPieces
+      For Each M As Mesh In DisjointMesh
+        refine_mesh(M)
+        For s As int32 = 0 To smooth - 1
+          SmoothMesh(M)
+        Next
+      Next
+
+      mc = DisjointMesh
+
+    End If
+
+  End Sub 
+
+  '<Custom additional code> 
+
+  Public intEdgeTable(255) As Int32
+  Public intTriTable(255, 15) As Int32
+  Public use_iso As Double
+  Public TaperCurves As Int32
+  Public TaperRatio As Double
+
+  Function local_cube(ByVal c As List(Of Point3d), ByVal c_v As List(Of Double)) As Mesh
+
+    'marching cube algorithm
+    'adapted from the c++ script by Paul Bourke:
+    'http://paulbourke.net/geometry/polygonise/
+
+    Dim cubeindex As Int32
+    If c_v(0) < use_iso Then cubeindex = cubeindex Or 1
+    If c_v(1) < use_iso Then cubeindex = cubeindex Or 2
+    If c_v(2) < use_iso Then cubeindex = cubeindex Or 4
+    If c_v(3) < use_iso Then cubeindex = cubeindex Or 8
+    If c_v(4) < use_iso Then cubeindex = cubeindex Or 16
+    If c_v(5) < use_iso Then cubeindex = cubeindex Or 32
+    If c_v(6) < use_iso Then cubeindex = cubeindex Or 64
+    If c_v(7) < use_iso Then cubeindex = cubeindex Or 128
+
+    Dim vertlist(11) As Point3d
+
+    If intEdgeTable(cubeindex) And 1 Then vertlist(0) = interp_vertex(c(0), c(1), c_v(0), c_v(1))
+    If intEdgeTable(cubeindex) And 2 Then vertlist(1) = interp_vertex(c(1), c(2), c_v(1), c_v(2))
+    If intEdgeTable(cubeindex) And 4 Then vertlist(2) = interp_vertex(c(2), c(3), c_v(2), c_v(3))
+    If intEdgeTable(cubeindex) And 8 Then vertlist(3) = interp_vertex(c(3), c(0), c_v(3), c_v(0))
+    If intEdgeTable(cubeindex) And 16 Then vertlist(4) = interp_vertex(c(4), c(5), c_v(4), c_v(5))
+    If intEdgeTable(cubeindex) And 32 Then vertlist(5) = interp_vertex(c(5), c(6), c_v(5), c_v(6))
+    If intEdgeTable(cubeindex) And 64 Then vertlist(6) = interp_vertex(c(6), c(7), c_v(6), c_v(7))
+    If intEdgeTable(cubeindex) And 128 Then vertlist(7) = interp_vertex(c(7), c(4), c_v(7), c_v(4))
+    If intEdgeTable(cubeindex) And 256 Then vertlist(8) = interp_vertex(c(0), c(4), c_v(0), c_v(4))
+    If intEdgeTable(cubeindex) And 512 Then vertlist(9) = interp_vertex(c(1), c(5), c_v(1), c_v(5))
+    If intEdgeTable(cubeindex) And 1024 Then vertlist(10) = interp_vertex(c(2), c(6), c_v(2), c_v(6))
+    If intEdgeTable(cubeindex) And 2048 Then vertlist(11) = interp_vertex(c(3), c(7), c_v(3), c_v(7))
+
+    Dim box_mesh As New Mesh()
+
+    For i As int32 = 0 To 16 Step 3
+      If intTriTable(cubeindex, i) = -1 Then Exit For
+      box_mesh.Vertices.Add(vertlist(intTriTable(cubeindex, i)))
+      box_mesh.Vertices.Add(vertlist(intTriTable(cubeindex, i + 1)))
+      box_mesh.Vertices.Add(vertlist(intTriTable(cubeindex, i + 2)))
+      box_mesh.Faces.AddFace(New MeshFace(i + 2, i + 1, i))
+    Next
+
+    Return box_mesh
+
+  End Function
+
+  Function interp_vertex(ByVal p1 As Point3d, ByVal p2 As Point3d, ByVal v1 As Double, ByVal v2 As Double) As Point3d
+    Return New Point3d(P1 + (use_iso - v1) / (v2 - v1) * (p2 - p1))
+  End Function
+
+  Function calculate_brp_field(ByVal test_pt As Point3d, ByVal msh As Mesh, ByVal radius As Double) As Double
+    'metaball field calculations
+    'based on methods described by Paul Bourke:
+    'http://paulbourke.net/geometry/implicitsurf/
+
+    Dim field_value As Double = 0
+    Dim test_dist As Double = msh.ClosestPoint(test_pt).DistanceTo(test_pt)
+
+    If test_dist > 0 And test_dist < radius / 3 Then
+      field_value += 1 * (1 - 3 * test_dist ^ 2 / radius ^ 2)
+    ElseIf test_dist >= radius / 3 And test_dist < radius Then
+      field_value += (3 / 2) * (1 - test_dist / radius) ^ 2
+    End If
+    Return field_value
+
+  End Function
+
+  Function calculate_crv_field(ByVal test_pt As Point3d, ByVal crv As Curve, ByVal radius As Double) As Double
+    'metaball field calculations
+    'based on methods described by Paul Bourke:
+    'http://paulbourke.net/geometry/implicitsurf/
+
+    Dim field_value As Double = 0
+
+    Dim t As Double
+    crv.ClosestPoint(test_pt, t)
+    Dim test_dist As Double = crv.PointAt(t).DistanceTo(test_pt)
+
+    'if the curves are to be tapered, adjust the radius calculation
+    'relative To the closest point along the charge curve
+
+    If TaperCurves = 1 Then
+      radius = (radius * (TaperRatio + 0.01)) + (radius * (1 - t) * (1 - TaperRatio))
+    ElseIf TaperCurves = 2 Then
+      radius = (radius * ((1 - TaperRatio) + 0.01)) + (radius * (1 - Math.Abs(0.5 - t)) * (TaperRatio))
+    End If
+
+    If test_dist > 0 And test_dist < radius / 3 Then
+      field_value += 1 * (1 - 3 * test_dist ^ 2 / radius ^ 2)
+    ElseIf test_dist >= radius / 3 And test_dist < radius Then
+      field_value += (3 / 2) * (1 - test_dist / radius) ^ 2
+    End If
+    Return field_value
+
+  End Function
+
+  Function calculate_pt_field(ByVal test_pt As Point3d, ByVal center As Point3d, ByVal radius As Double) As Double
+    'metaball field calculations
+    'based on methods described by Paul Bourke:
+    'http://paulbourke.net/geometry/implicitsurf/
+
+    Dim field_value As Double = 0
+
+    Dim test_dist As Double = test_pt.DistanceTo(center)
+
+    If test_dist > 0 And test_dist < radius / 3 Then
+      field_value += 1 * (1 - 3 * test_dist ^ 2 / radius ^ 2)
+    ElseIf test_dist >= radius / 3 And test_dist < radius Then
+      field_value += (3 / 2) * (1 - test_dist / radius) ^ 2
+    End If
+
+    Return field_value
+  End Function
+
+  Public Sub search_call(ByVal sender As Object, ByVal e As RTreeEventArgs)
+    Dim data As search_data = TryCast(e.Tag, search_data)
+    data.target_idc.Add(e.Id)
+  End Sub
+
+  Public Class search_data
+
+    Public Sub New(ByVal get_search_node As Point3d)
+      search_node = get_search_node
+    End Sub
+
+    Public search_node As Point3d
+    Public target_idc As New List(Of Int32)
+
+  End Class
+
+  Function refine_mesh(ByRef msh As Mesh) As Boolean
+    msh.Vertices.CombineIdentical(True, True)
+    msh.FaceNormals.ComputeFaceNormals()
+    msh.Normals.ComputeNormals()
+    msh.UnifyNormals()
+    Return True
+  End Function
+
+  Function SmoothMesh(ByRef msh As Mesh) As Boolean
+
+    Dim vertices() As Point3d = msh.Vertices.ToPoint3dArray
+    Dim set_vertices() As Point3d = msh.Vertices.ToPoint3dArray
+
+    For v As int32 = 0 To msh.TopologyVertices.Count - 1
+
+      Dim neighbors() As Int32 = msh.TopologyVertices.ConnectedTopologyVertices(v)
+      Dim center As Int32 = msh.TopologyVertices.MeshVertexIndices(v)(0)
+
+      Dim reset_center As New Point3d(0, 0, 0)
+      Dim counter As Int32 = 0
+      For Each neighbor As int32 In neighbors
+        Dim reset_vertex As Int32 = msh.TopologyVertices.MeshVertexIndices(neighbor)(0)
+        If reset_vertex <> center Then
+          reset_center += vertices(reset_vertex)
+          counter += 1
+        End If
+      Next
+
+      set_vertices(center) = reset_center / counter
+      set_vertices(center) = msh.ClosestPoint(set_vertices(center))
+
+    Next
+
+    For v As int32 = 0 To msh.Vertices.count - 1
+      msh.Vertices(v) = New Point3f(set_vertices(v).X, set_vertices(v).Y, set_vertices(v).Z)
+    Next
+
+    Return True
+
+  End Function
